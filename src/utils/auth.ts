@@ -8,8 +8,9 @@ export const getAccessTokenFromLS = () => {
   localStorage.getItem('access_token') || ''
 }
 
-export const clearAccessTokenFromLS = () => {
+export const clearLS = () => {
   localStorage.removeItem('access_token')
+  localStorage.removeItem('user_name')
 }
 
 export const setUserName = (profile: User) => {
@@ -19,8 +20,4 @@ export const setUserName = (profile: User) => {
 export const getUserName = () => {
   const result = localStorage.getItem('user_name')
   return result ? JSON.parse(result) : null
-}
-
-export const clearUserName = () => {
-  localStorage.removeItem('user_name')
 }

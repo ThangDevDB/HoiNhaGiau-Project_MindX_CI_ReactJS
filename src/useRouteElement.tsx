@@ -8,6 +8,11 @@ import Login from './pages/Login'
 import PorductList from './pages/ProductList'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import ProductDetail from './pages/ProductDetail'
+import Cart from './pages/Cart'
+import UserLayout from './pages/User/layouts/UserLayout'
+import ChangePassword from './pages/User/pages/ChangePassword'
+import PageNotFound from './pages/PageNotFound404'
 
 // Neu dang nhap roi se vao dc cac trang profile,...Chua dang nhap thi se ve trang dang nhap
 function ProtectedRoute() {
@@ -33,7 +38,15 @@ export default function useRouteElement() {
       )
     },
     {
-      path: '',
+      path: path.productDetail,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      )
+    },
+    {
+      path: '/',
       element: <RejectedRoute />,
       children: [
         {
@@ -55,18 +68,47 @@ export default function useRouteElement() {
       ]
     },
     {
-      path: '',
+      path: '/',
       element: <ProtectedRoute />,
       children: [
         {
-          path: path.profile,
+          path: '/cart',
           element: (
             <MainLayout>
-              <Profile />
+              <Cart />
             </MainLayout>
           )
+        },
+        {
+          path: path.user,
+          children: [
+            {
+              path: path.profile,
+              element: (
+                <MainLayout>
+                  <UserLayout>
+                    <Profile />
+                  </UserLayout>
+                </MainLayout>
+              )
+            },
+            {
+              path: path.profile,
+              element: (
+                <MainLayout>
+                  <UserLayout>
+                    <ChangePassword />
+                  </UserLayout>
+                </MainLayout>
+              )
+            }
+          ]
         }
       ]
+    },
+    {
+      path: '*',
+      element: <PageNotFound />
     }
   ])
   return routeElements

@@ -1,8 +1,9 @@
-import axios, { type AxiosInstance, AxiosError } from 'axios'
+import axios, { AxiosError, type AxiosInstance } from 'axios'
 import HttpStatusCode from '../contants/httpStatusCode.enum'
 import { toast } from 'react-toastify'
 import { AuthResponse } from '../types/auth.type'
-import { clearAccessTokenFromLS, clearUserName, getAccessTokenFromLS, saveAccessToken, setUserName } from './auth'
+import { clearLS, getAccessTokenFromLS, saveAccessToken, setUserName } from './auth'
+import path from '../contants/path'
 
 class Http {
   instance: AxiosInstance
@@ -32,20 +33,20 @@ class Http {
 
     this.instance.interceptors.response.use(
       (response) => {
+        // console.log(response)
         // Khi login or register thanh cong api se tra ve access token ta se lay access token do va luu vao local su dung cho viec dang nhap vao trang chu
         const { url } = response.config
-        if (url === '/login' || url === '/register') {
+        if (url === path.login || url === path.register) {
           const data = response.data as AuthResponse
           this.accessToken = data.data.access_token
           // luu token vao local
           saveAccessToken(this.accessToken)
           setUserName(data.data.user)
           // console.log(data.data.user)
-        } else if (url === '/logout') {
+        } else if (url === path.logout) {
           // dang xuat se xoa token khoi local
           this.accessToken = ''
-          clearAccessTokenFromLS()
-          clearUserName()
+          clearLS()
         }
         return response
       },

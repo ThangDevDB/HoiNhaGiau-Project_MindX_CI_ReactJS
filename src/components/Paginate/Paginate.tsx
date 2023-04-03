@@ -14,6 +14,7 @@ const RANGE = 2
 export default function Paginate({ queryConfig, pageSize }: Props) {
   // console.log(pageSize)
   const page = Number(queryConfig.page)
+  // console.log(page)
   const renderPagination = () => {
     let dotAfter = false
     let dotBefore = false
@@ -77,7 +78,18 @@ export default function Paginate({ queryConfig, pageSize }: Props) {
   return (
     <div className='mt-6 flex flex-wrap justify-center'>
       {page === 1 ? (
-        <span className='mx-2 cursor-not-allowed rounded border bg-white px-3 py-2 shadow-sm'>Trước</span>
+        <span className='mx-2 flex cursor-not-allowed items-center rounded border bg-gray-300 px-3 py-2 shadow-sm'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.5}
+            stroke='currentColor'
+            className='h-4 w-4'
+          >
+            <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
+          </svg>
+        </span>
       ) : (
         <Link
           to={{
@@ -87,16 +99,36 @@ export default function Paginate({ queryConfig, pageSize }: Props) {
               page: (page - 1).toString()
             }).toString()
           }}
-          className='mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm'
+          className='mx-2 flex cursor-pointer items-center rounded border bg-white px-3 py-2 shadow-sm'
         >
-          Trước
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.5}
+            stroke='currentColor'
+            className='h-4 w-4'
+          >
+            <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
+          </svg>
         </Link>
       )}
 
       {renderPagination()}
 
       {page === pageSize ? (
-        <span className='mx-2 cursor-not-allowed rounded border bg-white px-3 py-2 shadow-sm'>Sau</span>
+        <span className='mx-2 flex cursor-not-allowed items-center rounded border bg-gray-300 px-3 py-2 shadow-sm'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.5}
+            stroke='currentColor'
+            className='h-4 w-4'
+          >
+            <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3' />
+          </svg>
+        </span>
       ) : (
         <Link
           to={{
@@ -106,9 +138,18 @@ export default function Paginate({ queryConfig, pageSize }: Props) {
               page: (page + 1).toString()
             }).toString()
           }}
-          className='mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm'
+          className='mx-2 flex cursor-pointer items-center rounded border bg-white px-3 py-2 shadow-sm'
         >
-          Sau
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.5}
+            stroke='currentColor'
+            className='h-4 w-4'
+          >
+            <path strokeLinecap='round' strokeLinejoin='round' d='M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3' />
+          </svg>
         </Link>
       )}
     </div>

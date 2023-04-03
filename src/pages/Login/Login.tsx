@@ -11,8 +11,8 @@ import { ErrorResponse } from '../../types/utils.type'
 import { AppContext } from '../../contexts/app.context'
 import Button from '../../components/Button'
 
-type FormData = Omit<Schema, 'confirm_password'>
-const loginSchema = schema.omit(['confirm_password'])
+type FormData = Pick<Schema, 'email' | 'password'>
+const loginSchema = schema.pick(['email', 'password'])
 
 export default function Login() {
   const { setIsAuthenticated, setUser } = useContext(AppContext)
@@ -30,6 +30,7 @@ export default function Login() {
     mutationFn: (body: FormData) => login(body)
   })
   const onSubmit = handleSubmit((data) => {
+    // event?.preventDefault()
     LoginAccountMutation.mutate(data, {
       onSuccess: (data) => {
         setIsAuthenticated(true)
@@ -56,7 +57,7 @@ export default function Login() {
     })
   })
   return (
-    <div className='bg-orange-500'>
+    <div className='bg-[#2CB05A]'>
       <div className='mx-auto max-w-7xl px-4'>
         <div className='ls:py-32 grid grid-cols-1 py-10 lg:grid-cols-5 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
@@ -81,7 +82,7 @@ export default function Login() {
               <Button
                 isLoading={LoginAccountMutation.isLoading}
                 disabled={LoginAccountMutation.isLoading}
-                className='mt-4 flex w-full items-center justify-center bg-red-500 py-4 px-2 text-sm uppercase text-white hover:bg-red-600 '
+                className='mt-4 flex w-full items-center justify-center bg-[#2CB05A] py-4 px-2 text-sm uppercase text-white hover:bg-[#2CB05A]/90'
               >
                 Đăng Nhập
               </Button>

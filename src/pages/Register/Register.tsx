@@ -13,7 +13,8 @@ import { ErrorResponse } from 'src/types/utils.type'
 import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
 
-type FormData = Schema
+type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
+const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 
 export default function Register() {
   const { setIsAuthenticated, setUser } = useContext(AppContext)
@@ -24,7 +25,7 @@ export default function Register() {
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(registerSchema)
   })
 
   const AccountRegisterMutation = useMutation({
@@ -32,6 +33,7 @@ export default function Register() {
   })
 
   const onSubmit = handleSubmit((data) => {
+    // console.log(data)
     const body = omit(data, ['confirm_password'])
     AccountRegisterMutation.mutate(body, {
       onSuccess: (data) => {
@@ -61,7 +63,7 @@ export default function Register() {
   })
 
   return (
-    <div className='bg-orange-500'>
+    <div className='bg-[#2CB05A]'>
       <div className='mx-auto max-w-7xl px-4'>
         <div className='ls:py-32 grid grid-cols-1 py-10 lg:grid-cols-5 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
@@ -94,7 +96,7 @@ export default function Register() {
               <Button
                 isLoading={AccountRegisterMutation.isLoading}
                 disabled={AccountRegisterMutation.isLoading}
-                className='mt-4 flex w-full items-center justify-center bg-red-500 py-4 px-2 text-sm uppercase text-white hover:bg-red-600 '
+                className='mt-4 flex w-full items-center justify-center bg-[#2CB05A] py-4 px-2 text-sm uppercase text-white hover:bg-[#2CB05A]/90 '
               >
                 Đăng Kí
               </Button>

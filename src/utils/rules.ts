@@ -18,7 +18,8 @@ export const schema = yup
       .required('Nhập lại password là bắt buộc')
       .min(6, 'Độ dài từ 6 - 160 ký tự')
       .max(160, 'Độ dài từ 6 - 160 ký tự')
-      .oneOf([yup.ref('password')], 'Nhập lại password không khớp')
+      .oneOf([yup.ref('password')], 'Nhập lại password không khớp'),
+    name: yup.string().trim().required()
   })
   .required()
 
