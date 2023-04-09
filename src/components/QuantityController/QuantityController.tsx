@@ -51,7 +51,7 @@ export default function QuantityController({
   }
 
   return (
-    <div className={'ml-0 flex items-center' + classNameWrapper}>
+    <div className={'mr-5 flex items-center' + classNameWrapper}>
       <button
         onClick={Decrease}
         className='flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 text-gray-600'

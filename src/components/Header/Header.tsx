@@ -11,8 +11,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
 import { purchasesStatus } from '../../contants/purchases'
 import PurchasesApi from '../../apis/purchases.api'
-import { formatCurrency } from '../../utils/utils'
+import { formatCurrency, getAvatarURL } from '../../utils/utils'
 import Logo from '../../assets/LogoHNG6.svg'
+import path from '../../contants/path'
+import { useTranslation } from 'react-i18next'
+import { locales } from '../../i18n/i18n'
 
 type FormData = Pick<Schema, 'name'>
 
@@ -22,6 +25,14 @@ const MAX_PURCHASES = 5
 // const NO_PURCHASES = 0
 
 export default function Header() {
+  const { i18n } = useTranslation()
+  const { t } = useTranslation(['home', 'profile', 'product'])
+  const currentLanguage = locales[i18n.language as keyof typeof locales]
+
+  const changeLanguage = (lng: 'en' | 'vi') => {
+    i18n.changeLanguage(lng)
+  }
+
   const queryConfig = useQueryConfig()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -33,6 +44,7 @@ export default function Header() {
   })
   // console.log(queryConfig)
   const { setIsAuthenticated, isAuthenticated, setUser, user } = useContext(AppContext)
+  console.log(isAuthenticated)
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
@@ -42,6 +54,15 @@ export default function Header() {
       queryClient.removeQueries({ queryKey: ['purchasesData', { status: purchasesStatus.inCart }] })
     }
   })
+
+  // lay du lieu cua gio hang trong api show len ui
+  const { data: purchasesData } = useQuery({
+    queryKey: ['purchasesData', { status: purchasesStatus.inCart }],
+    queryFn: () => PurchasesApi.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
+  })
+
+  const purchasesInCart = purchasesData?.data.data
 
   const HandleLogout = () => {
     logoutMutation.mutate()
@@ -70,19 +91,8 @@ export default function Header() {
     })
   })
 
-  // lay du lieu cua gio hang trong api show len ui
-  const { data: purchasesData } = useQuery({
-    queryKey: ['purchasesData', { status: purchasesStatus.inCart }],
-    queryFn: () => PurchasesApi.getPurchases({ status: purchasesStatus.inCart }),
-    enabled: isAuthenticated
-  })
-
-  const purchasesInCart = purchasesData?.data.data
-  // console.log(purchasesInCart)
-  // if (!purchasesInCart) return []
-
   return (
-    <div className='bg-gradient-to-t from-[#30C062] to-[#2CB05A] pb-5 pt-2 text-white'>
+    <div className='bg-gradient-to-t from-[#30C062] to-[#2CB05A] pb-3 pt-2 text-white'>
       <div className='container'>
         <div className='mr-6 flex justify-end'>
           <Popover
@@ -90,8 +100,12 @@ export default function Header() {
             renderPopover={
               <div className='relative rounded-sm border border-gray-300 bg-white shadow-md'>
                 <div className='flex flex-col py-2 pr-28 pl-3'>
-                  <button className='py-2 px-3 text-left hover:text-[#34cf96]'>Tiếng Việt</button>
-                  <button className='py-2 px-3 text-left hover:text-[#34cf96]'>English</button>
+                  <button className='py-2 px-3 text-left hover:text-[#34cf96]' onClick={() => changeLanguage('vi')}>
+                    Tiếng Việt
+                  </button>
+                  <button className='py-2 px-3 text-left hover:text-[#34cf96]' onClick={() => changeLanguage('en')}>
+                    English
+                  </button>
                 </div>
               </div>
             }
@@ -110,7 +124,7 @@ export default function Header() {
                 d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418'
               />
             </svg>
-            <div className='span mx-1'>Tiếng Việt</div>
+            <div className='span mx-1'>{currentLanguage}</div>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -127,23 +141,30 @@ export default function Header() {
               className='ml-6 flex cursor-pointer items-center py-1 hover:text-gray-300'
               renderPopover={
                 <div className='relative rounded-sm border border-gray-300 bg-white shadow-md'>
-                  <Link to='/profile' className='block w-full bg-white py-3 px-5 text-left hover:text-[#2CB05A]'>
-                    Tài Khoản Của Tôi
+                  <Link to={path.profile} className='block w-full bg-white py-3 px-5 text-left hover:text-[#2CB05A]'>
+                    {t('home:header.my_account')}
                   </Link>
-                  <Link to='#' className='block w-full bg-white py-3 px-5 text-left hover:text-[#2CB05A]'>
-                    Đơn Mua
+                  <Link
+                    to={path.historyPurchases}
+                    className='block w-full bg-white py-3 px-5 text-left hover:text-[#2CB05A]'
+                  >
+                    {t('home:header.my_purchase')}
                   </Link>
                   <button
                     onClick={HandleLogout}
                     className='block w-full bg-white py-3 px-5 text-left hover:text-[#2CB05A]'
                   >
-                    Đăng Xuất
+                    {t('home:header.logout')}
                   </button>
                 </div>
               }
             >
               <div className='mr-2 h-6 w-6 flex-shrink-0'>
-                <img src={Logo} alt='avatar' className='h-full w-full rounded-full object-cover' />
+                <img
+                  src={getAvatarURL(user?.avatar)}
+                  alt='avatar'
+                  className='h-full w-full rounded-full object-cover'
+                />
               </div>
               <div className=''>{user?.email}</div>
             </Popover>
@@ -152,11 +173,11 @@ export default function Header() {
           {!isAuthenticated && (
             <div className='flex items-center'>
               <Link to='/register' className='mx-3 capitalize hover:text-white/70'>
-                Đăng kí
+                {t('profile:register')}
               </Link>
               <div className='h-4 border-r-[2px] border-r-white' />
               <Link to='/login' className='mx-3 capitalize hover:text-white/70'>
-                Đăng nhập
+                {t('profile:login')}
               </Link>
             </div>
           )}
@@ -171,7 +192,7 @@ export default function Header() {
               <input
                 type='text'
                 // name='search'
-                placeholder='Tim san pham'
+                placeholder='Tìm sản phẩm...'
                 className='flex-grow border-none bg-transparent px-3 py-2 text-black outline-none'
                 {...register('name')}
               />
@@ -198,9 +219,9 @@ export default function Header() {
               className='ml-6 flex cursor-pointer items-center py-1 hover:text-gray-300'
               renderPopover={
                 <div className='relative max-w-[400px] rounded-sm border border-gray-300 bg-white text-sm shadow-md'>
-                  {purchasesInCart ? (
+                  {purchasesInCart?.length ? (
                     <div className='p-2'>
-                      <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
+                      <div className='capitalize text-gray-400'>{t('product:cart.new_products')}</div>
                       <div className='mt-5'>
                         {purchasesInCart.slice(0, MAX_PURCHASES).map((purchases) => {
                           return (
@@ -224,14 +245,14 @@ export default function Header() {
                       </div>
                       <div className='mt-6 flex items-center justify-between'>
                         <div className='text-xs capitalize text-gray-500'>
-                          {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''} thêm
-                          vào giỏ hàng
+                          {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''}{' '}
+                          {t('product:cart.add_to_cart')}
                         </div>
                         <Link
                           to='/cart'
                           className='rounded-sm bg-[#2CB05A] px-4 py-2 capitalize text-white hover:opacity-80'
                         >
-                          Xem Giỏ Hàng
+                          {t('product:cart.view_cart')}
                         </Link>
                       </div>
                     </div>
@@ -242,7 +263,7 @@ export default function Header() {
                         alt='no purchase'
                         className='h-24 w-24'
                       />
-                      <div className='mt-3 capitalize'>Chưa có sản phẩm</div>
+                      <div className='mt-3 capitalize'>{t('product:cart.empty')}</div>
                     </div>
                   )}
                 </div>

@@ -10,11 +10,14 @@ import { isErrorUnprocessableEntity } from '../../utils/utils'
 import { ErrorResponse } from '../../types/utils.type'
 import { AppContext } from '../../contexts/app.context'
 import Button from '../../components/Button'
+import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 
 export default function Login() {
+  const { t } = useTranslation('profile')
   const { setIsAuthenticated, setUser } = useContext(AppContext)
   const navigate = useNavigate()
   const {
@@ -36,6 +39,7 @@ export default function Login() {
         setIsAuthenticated(true)
         setUser(data.data.data.user)
         navigate('/')
+        toast.info(data.data.message, { autoClose: 1500, position: 'top-center' })
       },
       onError: (error) => {
         if (isErrorUnprocessableEntity<ErrorResponse<FormData>>(error)) {
@@ -62,7 +66,7 @@ export default function Login() {
         <div className='ls:py-32 grid grid-cols-1 py-10 lg:grid-cols-5 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
             <form noValidate onSubmit={onSubmit} className='rounded bg-white p-10 shadow-sm'>
-              <div className='text-2xl'>Đăng Nhập</div>
+              <div className='text-2xl'>{t('profile:login')}</div>
               <Input
                 register={register}
                 errorMessage={errors.email?.message}
@@ -75,7 +79,7 @@ export default function Login() {
                 register={register}
                 errorMessage={errors.password?.message}
                 name='password'
-                className='mt-3'
+                className='relative mt-3'
                 placeholder='Password'
                 type='password'
               />
@@ -84,13 +88,13 @@ export default function Login() {
                 disabled={LoginAccountMutation.isLoading}
                 className='mt-4 flex w-full items-center justify-center bg-[#2CB05A] py-4 px-2 text-sm uppercase text-white hover:bg-[#2CB05A]/90'
               >
-                Đăng Nhập
+                {t('profile:login')}
               </Button>
               <div className='mt-8 text-center'>
                 <div className='item-center flex justify-center'>
-                  <span className='text-slate-400'>Bạn chưa có tài khoản?</span>
+                  <span className='text-slate-400'>{t('profile:form_register_login.have_not_account')}</span>
                   <Link to='/register' className='text-red-400'>
-                    Đăng Kí
+                    {t('profile:register')}
                   </Link>
                 </div>
               </div>

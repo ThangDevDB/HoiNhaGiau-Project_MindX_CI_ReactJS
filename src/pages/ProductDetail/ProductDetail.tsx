@@ -5,15 +5,19 @@ import ProductRating from '../../components/ProductRating'
 import ProductApi from '../../apis/product.api'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from '../../utils/utils'
 // import InputNumber from '../../components/InputNumber/InputNumber'
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Product as ProductType, ProductListConfig } from '../../types/product.type'
 import Product from '../ProductList/Product'
 import QuantityController from '../../components/QuantityController/QuantityController'
 import PurchasesApi from '../../apis/purchases.api'
 import { purchasesStatus } from '../../contants/purchases'
 import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
+import { AppContext } from '../../contexts/app.context'
 
 export default function ProductDetail() {
+  const { isAuthenticated } = useContext(AppContext)
+  const { t } = useTranslation('product')
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [buyCount, setBuyCount] = useState(1)
@@ -90,10 +94,14 @@ export default function ProductDetail() {
 
   const buyNow = async () => {
     const res = await addToCartMutation.mutateAsync({ buy_count: buyCount, product_id: productDetail?._id as string })
-    const purchases = res.data.data
+    const purchase = res.data.data
     navigate('/cart', {
-      state: { purchaseId: purchases._id }
+      state: { purchaseId: purchase._id }
     })
+  }
+
+  const navigateToLogin = () => {
+    navigate('/login')
   }
 
   if (!productDetail) return null
@@ -103,7 +111,7 @@ export default function ProductDetail() {
         <div className='container'>
           <div className='grid grid-cols-12 gap-9'>
             <div className='col-span-5'>
-              <div className='relative w-full cursor-zoom-in overflow-hidden pt-[100%] shadow'>
+              <div className='relative w-full cursor-pointer overflow-hidden pt-[100%] shadow'>
                 <img
                   className=' absolute top-0 left-0 h-full w-full bg-white object-cover'
                   src={activeImage}
@@ -166,18 +174,18 @@ export default function ProductDetail() {
                 <div className='mx-4 h-4 w-[1px] bg-gray-300'></div>
                 <div>
                   <span>{formatNumberToSocialStyle(productDetail.sold)}</span>
-                  <span className='ml-1 text-gray-500'>Đã bán</span>
+                  <span className='ml-1 text-gray-500'>{t('product.sold')}</span>
                 </div>
               </div>
               <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
                 <div className='text-gray-500 line-through'>₫{formatCurrency(productDetail.price_before_discount)}</div>
                 <div className='text-orange ml-3 text-3xl font-medium'>₫{formatCurrency(productDetail.price)}</div>
                 <div className='ml-4 rounded-sm bg-orange-500 px-1 py-[2px] text-xs font-semibold uppercase text-white'>
-                  {rateSale(productDetail.price_before_discount, productDetail.price)} giảm
+                  {rateSale(productDetail.price_before_discount, productDetail.price)} {t('product.discount')}
                 </div>
               </div>
               <div className='mt-8 flex items-center'>
-                <div className='capitalize text-gray-500'>số lượng</div>
+                <div className='pr-10 capitalize text-gray-500'>{t('product.quantity')}</div>
                 <QuantityController
                   onDecrease={handleBuyCount}
                   onType={handleBuyCount}
@@ -185,44 +193,106 @@ export default function ProductDetail() {
                   value={buyCount}
                   max={productDetail.quantity}
                 />
-                <div className='ml-6 text-sm text-gray-500'>{productDetail.quantity} sản phẩm có sẵn</div>
+                <div className='ml-6 text-sm text-gray-500'>
+                  {productDetail.quantity} {t('product.available')}
+                </div>
               </div>
               <div className='mt-8 flex items-center'>
-                <button
-                  onClick={addToCart}
-                  className='flex h-12 items-center justify-center rounded-sm border border-[#2CB05A] bg-[#2CB05A]/10 px-5 capitalize text-[#2CB05A] shadow-sm hover:bg-[#2CB05A]/5'
-                >
-                  <svg
-                    enableBackground='new 0 0 15 15'
-                    viewBox='0 0 15 15'
-                    x={0}
-                    y={0}
-                    className='mr-[10px] h-5 w-5 fill-current stroke-[#2CB05A] text-[#2CB05A]'
+                {isAuthenticated && (
+                  <button
+                    onClick={addToCart}
+                    className='flex h-12 items-center justify-center rounded-sm border border-[#2CB05A] bg-[#2CB05A]/10 px-5 capitalize text-[#2CB05A] shadow-sm hover:bg-[#2CB05A]/5'
                   >
-                    <g>
+                    <svg
+                      enableBackground='new 0 0 15 15'
+                      viewBox='0 0 15 15'
+                      x={0}
+                      y={0}
+                      className='mr-[10px] h-5 w-5 fill-current stroke-[#2CB05A] text-[#2CB05A]'
+                    >
                       <g>
-                        <polyline
+                        <g>
+                          <polyline
+                            fill='none'
+                            points='.5 .5 2.7 .5 5.2 11 12.4 11 14.5 3.5 3.7 3.5'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeMiterlimit={10}
+                          />
+                          <circle cx={6} cy='13.5' r={1} stroke='none' />
+                          <circle cx='11.5' cy='13.5' r={1} stroke='none' />
+                        </g>
+                        <line
                           fill='none'
-                          points='.5 .5 2.7 .5 5.2 11 12.4 11 14.5 3.5 3.7 3.5'
                           strokeLinecap='round'
-                          strokeLinejoin='round'
                           strokeMiterlimit={10}
+                          x1='7.5'
+                          x2='10.5'
+                          y1={7}
+                          y2={7}
                         />
-                        <circle cx={6} cy='13.5' r={1} stroke='none' />
-                        <circle cx='11.5' cy='13.5' r={1} stroke='none' />
+                        <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1={9} x2={9} y1='8.5' y2='5.5' />
                       </g>
-                      <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1='7.5' x2='10.5' y1={7} y2={7} />
-                      <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1={9} x2={9} y1='8.5' y2='5.5' />
-                    </g>
-                  </svg>
-                  Thêm vào giỏ hàng
-                </button>
-                <button
-                  onClick={buyNow}
-                  className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-[#2CB05A] px-5 capitalize text-white shadow-sm outline-none hover:bg-[#2CB05A]/90'
-                >
-                  Mua ngay
-                </button>
+                    </svg>
+                    {t('cart.add_to_cart')}
+                  </button>
+                )}
+                {!isAuthenticated && (
+                  <button
+                    onClick={navigateToLogin}
+                    className='flex h-12 items-center justify-center rounded-sm border border-[#2CB05A] bg-[#2CB05A]/10 px-5 capitalize text-[#2CB05A] shadow-sm hover:bg-[#2CB05A]/5'
+                  >
+                    <svg
+                      enableBackground='new 0 0 15 15'
+                      viewBox='0 0 15 15'
+                      x={0}
+                      y={0}
+                      className='mr-[10px] h-5 w-5 fill-current stroke-[#2CB05A] text-[#2CB05A]'
+                    >
+                      <g>
+                        <g>
+                          <polyline
+                            fill='none'
+                            points='.5 .5 2.7 .5 5.2 11 12.4 11 14.5 3.5 3.7 3.5'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeMiterlimit={10}
+                          />
+                          <circle cx={6} cy='13.5' r={1} stroke='none' />
+                          <circle cx='11.5' cy='13.5' r={1} stroke='none' />
+                        </g>
+                        <line
+                          fill='none'
+                          strokeLinecap='round'
+                          strokeMiterlimit={10}
+                          x1='7.5'
+                          x2='10.5'
+                          y1={7}
+                          y2={7}
+                        />
+                        <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1={9} x2={9} y1='8.5' y2='5.5' />
+                      </g>
+                    </svg>
+                    {t('cart.add_to_cart')}
+                  </button>
+                )}
+
+                {isAuthenticated && (
+                  <button
+                    onClick={buyNow}
+                    className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-[#2CB05A] px-5 capitalize text-white shadow-sm outline-none hover:bg-[#2CB05A]/90'
+                  >
+                    {t('cart.buy_now')}
+                  </button>
+                )}
+                {!isAuthenticated && (
+                  <button
+                    onClick={navigateToLogin}
+                    className='ml-4 flex h-12 min-w-[5rem] items-center justify-center rounded-sm bg-[#2CB05A] px-5 capitalize text-white shadow-sm outline-none hover:bg-[#2CB05A]/90'
+                  >
+                    {t('cart.buy_now')}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -231,7 +301,7 @@ export default function ProductDetail() {
       <div className='mt-8'>
         <div className='container'>
           <div className=' bg-white p-4 shadow'>
-            <div className='rounded bg-gray-50 p-4 text-lg capitalize text-slate-700'>Mô tả sản phẩm</div>
+            <div className='rounded bg-gray-50 p-4 text-lg capitalize text-slate-700'>{t('product.desc')}</div>
             <div className='mx-4 mt-12 mb-4 text-sm leading-loose'>
               <div
                 dangerouslySetInnerHTML={{
@@ -244,7 +314,7 @@ export default function ProductDetail() {
       </div>
       <div className='mt-8'>
         <div className='container'>
-          <div className='uppercase text-gray-600'>CÓ THỂ BẠN CŨNG THÍCH</div>
+          <div className='uppercase text-gray-600'> {t('product.recommended_products')}</div>
           {productsData && (
             <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
               {productsData.data.data.products.map((product) => (

@@ -12,11 +12,14 @@ import { isErrorUnprocessableEntity } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
 import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
+import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
 
 type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 
 export default function Register() {
+  const { t } = useTranslation('profile')
   const { setIsAuthenticated, setUser } = useContext(AppContext)
   const navigate = useNavigate()
   const {
@@ -41,6 +44,7 @@ export default function Register() {
         setUser(data.data.data.user)
         // console.log(data.data.data.user)
         navigate('/')
+        toast.info(data.data.message, { autoClose: 1500, position: 'top-center' })
       },
       onError: (error) => {
         if (isErrorUnprocessableEntity<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
@@ -68,7 +72,7 @@ export default function Register() {
         <div className='ls:py-32 grid grid-cols-1 py-10 lg:grid-cols-5 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
             <form noValidate onSubmit={onSubmit} className='rounded bg-white p-10 shadow-sm'>
-              <div className='text-2xl'>Đăng Kí</div>
+              <div className='text-2xl'>{t('profile:register')}</div>
               <Input
                 register={register}
                 errorMessage={errors.email?.message}
@@ -81,7 +85,7 @@ export default function Register() {
                 register={register}
                 errorMessage={errors.password?.message}
                 name='password'
-                className='mt-3'
+                className='relative mt-3'
                 placeholder='Password'
                 type='password'
               />
@@ -89,7 +93,7 @@ export default function Register() {
                 register={register}
                 errorMessage={errors.confirm_password?.message}
                 name='confirm_password'
-                className='mt-3'
+                className='relative mt-3'
                 placeholder='Confirm Password'
                 type='password'
               />
@@ -98,13 +102,13 @@ export default function Register() {
                 disabled={AccountRegisterMutation.isLoading}
                 className='mt-4 flex w-full items-center justify-center bg-[#2CB05A] py-4 px-2 text-sm uppercase text-white hover:bg-[#2CB05A]/90 '
               >
-                Đăng Kí
+                {t('profile:register')}
               </Button>
               <div className='mt-8 text-center'>
                 <div className='item-center flex justify-center'>
-                  <span className='text-slate-400'>Bạn đã có tài khoản?</span>
+                  <span className='text-slate-400'>{t('profile:form_register_login.have_yet_account')}</span>
                   <Link to='/login' className='text-red-400'>
-                    Đăng Nhập
+                    {t('profile:login')}
                   </Link>
                 </div>
               </div>

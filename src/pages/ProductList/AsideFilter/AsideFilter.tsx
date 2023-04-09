@@ -7,6 +7,7 @@ import path from '../../../contants/path'
 import { QueryConfig } from '../PorductList'
 import classNames from 'classnames'
 import RatingStar from '../../../pages/RatingStar'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   queryConfig: QueryConfig
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function AsideFilter({ queryConfig, categories }: Props) {
+  const { t } = useTranslation(['home', 'product'])
   const { category } = queryConfig
   const navigate = useNavigate()
 
@@ -41,7 +43,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             d='M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5'
           />
         </svg>
-        Tất Cả Danh Mục
+        {t('home:aside_filter.all_categories')}
       </Link>
       <div className='my-4 h-[1px] bg-gray-400' />
       <ul>
@@ -90,11 +92,11 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             />
           </g>
         </svg>
-        bộ lọc tìm kiếm
+        {t('home:aside_filter.filter_search')}
       </Link>
       <div className='my-4 h-[1px] bg-gray-400' />
-      <div className='my-5'>
-        <div>Khoảng Giá</div>
+      {/* <div className='my-5'>
+        <div>{t('home:aside_filter.range_price')}</div>
         <form className='mt-2'>
           <div className='flex items-center'>
             <div className='grow'>
@@ -116,19 +118,19 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             </div>
           </div>
           <Button className='mt-5 flex w-full items-center justify-center bg-[#2CB05A] p-2 text-sm uppercase text-white hover:bg-[#2CB05A]/80'>
-            áp dụng
+            {t('home:aside_filter.apply')}
           </Button>
         </form>
       </div>
-      <div className='my-4 h-[1px] bg-gray-400' />
-      <div className='text-xl'>Đánh Giá</div>
+      <div className='my-4 h-[1px] bg-gray-400' /> */}
+      <div className='text-xl'>{t('home:aside_filter.rate')}</div>
       <RatingStar queryConfig={queryConfig} />
       <div className='my-4 h-[1px] bg-gray-400' />
       <Button
         onClick={handleRemoveAll}
         className='w-full bg-[#2CB05A] py-2 px-2 text-center text-sm uppercase text-white hover:bg-[#2CB05A]/80'
       >
-        xóa tất cả
+        {t('home:aside_filter.delete_all')}
       </Button>
     </div>
   )

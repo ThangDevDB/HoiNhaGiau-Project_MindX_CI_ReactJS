@@ -6,13 +6,14 @@ import MainLayout from './layouts/MainLayout'
 import RegisterLayout from './layouts/RegisterLayout'
 import Login from './pages/Login'
 import PorductList from './pages/ProductList'
-import Profile from './pages/Profile'
+import Profile from './pages/User/pages/Profile'
 import Register from './pages/Register'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
 import UserLayout from './pages/User/layouts/UserLayout'
 import ChangePassword from './pages/User/pages/ChangePassword'
 import PageNotFound from './pages/PageNotFound404'
+import HistoryPurchases from './pages/User/pages/HistoryPurchases'
 
 // Neu dang nhap roi se vao dc cac trang profile,...Chua dang nhap thi se ve trang dang nhap
 function ProtectedRoute() {
@@ -28,23 +29,6 @@ function RejectedRoute() {
 
 export default function useRouteElement() {
   const routeElements = useRoutes([
-    {
-      path: '/',
-      index: true,
-      element: (
-        <MainLayout>
-          <PorductList />
-        </MainLayout>
-      )
-    },
-    {
-      path: path.productDetail,
-      element: (
-        <MainLayout>
-          <ProductDetail />
-        </MainLayout>
-      )
-    },
     {
       path: '/',
       element: <RejectedRoute />,
@@ -81,30 +65,44 @@ export default function useRouteElement() {
         },
         {
           path: path.user,
+          element: (
+            <MainLayout>
+              <UserLayout />
+            </MainLayout>
+          ),
           children: [
             {
               path: path.profile,
-              element: (
-                <MainLayout>
-                  <UserLayout>
-                    <Profile />
-                  </UserLayout>
-                </MainLayout>
-              )
+              element: <Profile />
             },
             {
-              path: path.profile,
-              element: (
-                <MainLayout>
-                  <UserLayout>
-                    <ChangePassword />
-                  </UserLayout>
-                </MainLayout>
-              )
+              path: path.changePassword,
+              element: <ChangePassword />
+            },
+            {
+              path: path.historyPurchases,
+              element: <HistoryPurchases />
             }
           ]
         }
       ]
+    },
+    {
+      path: path.productDetail,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      )
+    },
+    {
+      path: '/',
+      index: true,
+      element: (
+        <MainLayout>
+          <PorductList />
+        </MainLayout>
+      )
     },
     {
       path: '*',

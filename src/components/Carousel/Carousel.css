@@ -1,0 +1,7 @@
+/* .icon-chevron {
+  height: 30px;
+  width: 30px;
+} */
+.icon-chevron * {
+  stroke: white;
+}
