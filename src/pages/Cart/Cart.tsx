@@ -255,12 +255,12 @@ export default function Cart() {
                                 }
                               />
                             </div>
-                            <div className='col-span-1'>
+                            <div className='col-span-1 mr-8'>
                               <span className='text-orange-500'>
                                 đ{formatCurrency(purchases.price * purchases.buy_count)}
                               </span>
                             </div>
-                            <div className='col-span-1'>
+                            <div className='col-span-1 mr-9'>
                               <button
                                 onClick={handleDelete(index)}
                                 className='rounded-sm bg-orange-500 px-3 py-2 text-white hover:bg-orange-500/90'
